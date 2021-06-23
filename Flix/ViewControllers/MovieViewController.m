@@ -7,8 +7,9 @@
 
 #import "MovieViewController.h"
 
-@interface MovieViewController ()
+@interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
 
 @end
@@ -18,6 +19,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
     
     NSURL *url = [NSURL URLWithString:@"https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
@@ -36,6 +40,8 @@
                for (NSDictionary *movie in self.movies) {
                    NSLog(@"%@", movie[@"title"]);
                }
+               
+               [self.tableView reloadData];
                // TODO: Get the array of movies
                // TODO: Store the movies in a property to use elsewhere
                // TODO: Reload your table view data
@@ -44,6 +50,21 @@
     [task resume];
 }
 
+// functions that returns how many rows we want in a table view
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.movies.count;
+}
+
+// returns what we want inside of each table section, the amount of sections is defined in the previous function
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    
+    NSDictionary *movie = self.movies[indexPath.row];
+    
+    cell.textLabel.text = movie[@"title"];
+    
+    return cell;
+}
 /*
 #pragma mark - Navigation
 
