@@ -16,6 +16,7 @@
 		791B827B26838FC8003976B7 /* FlixTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 791B827A26838FC8003976B7 /* FlixTests.m */; };
 		791B828626838FC9003976B7 /* FlixUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 791B828526838FC9003976B7 /* FlixUITests.m */; };
 		791B829526839D03003976B7 /* MovieViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 791B829426839D03003976B7 /* MovieViewController.m */; };
+		791B829E2683C6E4003976B7 /* MovieCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 791B829D2683C6E4003976B7 /* MovieCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		791B828726838FC9003976B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		791B829326839D03003976B7 /* MovieViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MovieViewController.h; sourceTree = "<group>"; };
 		791B829426839D03003976B7 /* MovieViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MovieViewController.m; sourceTree = "<group>"; };
+		791B829C2683C6E4003976B7 /* MovieCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MovieCell.h; sourceTree = "<group>"; };
+		791B829D2683C6E4003976B7 /* MovieCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MovieCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +144,8 @@
 		791B829626839E4F003976B7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				791B829C2683C6E4003976B7 /* MovieCell.h */,
+				791B829D2683C6E4003976B7 /* MovieCell.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -291,6 +296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				791B829526839D03003976B7 /* MovieViewController.m in Sources */,
+				791B829E2683C6E4003976B7 /* MovieCell.m in Sources */,
 				791B826026838FC7003976B7 /* AppDelegate.m in Sources */,
 				791B827126838FC8003976B7 /* main.m in Sources */,
 				791B826326838FC7003976B7 /* SceneDelegate.m in Sources */,

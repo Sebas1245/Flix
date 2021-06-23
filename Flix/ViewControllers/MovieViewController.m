@@ -6,6 +6,7 @@
 //
 
 #import "MovieViewController.h"
+#import "MovieCell.h"
 
 @interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -57,11 +58,14 @@
 
 // returns what we want inside of each table section, the amount of sections is defined in the previous function
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell"];
     
     NSDictionary *movie = self.movies[indexPath.row];
+    cell.titleLabel.text = movie[@"title"];
+    cell.sinopsisLabel.text = movie[@"overview"];
     
-    cell.textLabel.text = movie[@"title"];
+//    cell.textLabel.text = movie[@"title"];
+    
     
     return cell;
 }
