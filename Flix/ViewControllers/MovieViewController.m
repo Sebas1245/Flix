@@ -7,6 +7,7 @@
 
 #import "MovieViewController.h"
 #import "MovieCell.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -63,6 +64,16 @@
     NSDictionary *movie = self.movies[indexPath.row];
     cell.titleLabel.text = movie[@"title"];
     cell.sinopsisLabel.text = movie[@"overview"];
+    
+    
+    NSString *baseURLString = @"https://image.tmdb.org/t/p/w500";
+    NSString *posterURLString = movie[@"poster_path"];
+    NSString *fullPosterURLString = [baseURLString stringByAppendingString:posterURLString];
+    
+    NSURL *posterURL = [NSURL URLWithString:fullPosterURLString];
+    
+    cell.posterView.image = nil;
+    [cell.posterView setImageWithURL:posterURL];
     
 //    cell.textLabel.text = movie[@"title"];
     
