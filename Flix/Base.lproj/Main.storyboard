@@ -217,11 +217,11 @@
             </objects>
             <point key="canvasLocation" x="936" y="-691"/>
         </scene>
-        <!--Item-->
+        <!--Superheros-->
         <scene sceneID="4LQ-Jh-0L1">
             <objects>
                 <navigationController id="uwG-49-sBR" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="nP5-rp-Fgd"/>
+                    <tabBarItem key="tabBarItem" title="Superheros" image="superhero_tabbar_item" id="nP5-rp-Fgd"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="NWL-vU-ndA">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -255,6 +255,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="superhero_tabbar_item" width="21" height="23"/>
         <image name="ticket_tabbar_icon" width="25" height="25"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
