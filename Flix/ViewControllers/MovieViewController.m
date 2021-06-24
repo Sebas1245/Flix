@@ -17,7 +17,6 @@
 @property(nonatomic,strong) UIRefreshControl *refreshControl;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
-
 @end
 
 @implementation MovieViewController
@@ -29,7 +28,6 @@
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     
-    [self.activityIndicator startAnimating];
     
     [self fetchMovies];
     
@@ -42,13 +40,15 @@
 }
 
 -(void)fetchMovies {
-    
+    [self.activityIndicator startAnimating];
+
     NSURL *url = [NSURL URLWithString:@"https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10.0];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
            if (error != nil) {
                NSLog(@"%@", [error localizedDescription]);
+               [self showAlert];
            }
            else {
                NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
@@ -90,11 +90,27 @@
     
     cell.posterView.image = nil;
     [cell.posterView setImageWithURL:posterURL];
-    
-//    cell.textLabel.text = movie[@"title"];
-    
+        
     
     return cell;
+}
+
+-(void)showAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Cannot Get Movies"
+                                                                               message:@"The internet connection appears to be offline."
+                                                                        preferredStyle:(UIAlertControllerStyleAlert)];
+
+    // create an OK action
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Try again"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * _Nonnull action) {
+                                                             // handle response here.
+                                                            [self fetchMovies];
+                                                     }];
+    // add the OK action to the alert controller
+    [alert addAction:okAction];
+    // present the alert
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Navigation
