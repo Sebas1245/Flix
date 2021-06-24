@@ -2,7 +2,7 @@
 
 **Flix** is a movies app using the [The Movie Database API](http://docs.themoviedb.apiary.io/#).
 
-Time spent: **X** hours spent in total
+Time spent: **12.5** hours spent in total
 
 ## User Stories
 
@@ -14,7 +14,7 @@ The following **required** functionality is complete:
 - [X] User sees a loading state while waiting for the movies API.
 - [X] User can pull to refresh the movie list.
 - [X] User sees an error message when there's a networking error.
-- [ ] User can tap a tab bar button to view a grid layout of Movie Posters using a CollectionView.
+- [X] User can tap a tab bar button to view a grid layout of Movie Posters using a CollectionView.
 
 The following **optional** features are implemented:
 
@@ -35,19 +35,21 @@ The following **additional** features are implemented:
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1.
-2.
+1. Ways to improve the loading indicator.
+2. Ways to improve the deail view layout.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
 
-![]()
+![](./flix_demo.gif)
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Some of the challenges that this assignment had was building the table views, then adding the tab bar controller, and the collection grid view. Both types of views were something new that I had to learn to implement and working with the tab bar controller gave me some unexpected issues when trying to run the project.
+
+Another big challenge was testing the loading indicator, since installation of an additional Xcode tool was required (Network Link Conditioner). I had a tough time installing this tool, but it was worth it when I finally got it working.
 
 ## Credits
 
@@ -57,7 +59,7 @@ List an 3rd party libraries, icons, graphics, or other assets you used in your a
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright [2021] [Sebastián Saldaña]
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
