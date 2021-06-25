@@ -12,11 +12,12 @@
 
 
 
-@interface MoviesGridViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface MoviesGridViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate>
+
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-
 @property (nonatomic, strong) NSArray *movies;
-
+@property (nonatomic, strong) NSArray *filteredMovies;
+@property (strong, nonatomic) UISearchBar *searchBar;
 
 @end
 
@@ -27,6 +28,19 @@
     // Do any additional setup after loading the view.
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
+    // create the search bar programatically since you won't be
+    // able to drag one onto the navigation bar
+    self.searchBar = [[UISearchBar alloc] init];
+    [self.searchBar sizeToFit];
+    // after the search bar is created bind it to the interface implementation of this view controller
+    self.searchBar.delegate = self;
+
+    // the UIViewController comes with a navigationItem property
+    // this will automatically be initialized for you if when the
+    // view controller is added to a navigation controller's stack
+    // you just need to set the titleView to be the search bar
+    self.navigationItem.titleView = self.searchBar;
+
     
     [self fetchMovies];
     
@@ -55,6 +69,7 @@
             NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
             
             self.movies = dataDictionary[@"results"];
+            self.filteredMovies = self.movies;
             [self.collectionView reloadData];
                         
 
@@ -74,7 +89,7 @@
     // Pass the selected object to the new view controller.
     UICollectionViewCell *tappedCell = sender;
     NSIndexPath *indexPath = [self.collectionView indexPathForCell:tappedCell];
-    NSDictionary *movie = self.movies[indexPath.row];
+    NSDictionary *movie = self.filteredMovies[indexPath.row];
     
     DetailsViewController *detailViewController = [segue destinationViewController];
     detailViewController.movie = movie;
@@ -84,7 +99,7 @@
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     MovieCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MovieCollectionViewCell" forIndexPath:indexPath];
     
-    NSDictionary *movie = self.movies[indexPath.item];
+    NSDictionary *movie = self.filteredMovies[indexPath.item];
     
     NSString *baseURLString = @"https://image.tmdb.org/t/p/w500";
     NSString *posterURLString = movie[@"poster_path"];
@@ -100,8 +115,40 @@
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.movies.count;
+    return self.filteredMovies.count;
 }
 
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    
+    if (searchText.length != 0) {
+        
+//        NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(NSDictionary *evaluatedObject, NSDictionary *bindings) {
+//            return [evaluatedObject[@"original_title"] containsString:searchText];
+//        }];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(title CONTAINS[cd] %@)", searchText]; // RESEARCH HOW THIS WORKS
+        
+        self.filteredMovies = [self.movies filteredArrayUsingPredicate:predicate];
+        NSLog(@"%@", self.filteredMovies);
+                        
+    }
+    else {
+        self.filteredMovies = self.movies;
+        // make keyboard dissapear
+        [self.view endEditing:true];
+    }
+    
+    [self.collectionView reloadData];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    self.searchBar.showsCancelButton = YES;
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    self.searchBar.showsCancelButton = NO;
+    self.searchBar.text = @"";
+    [self.searchBar resignFirstResponder];
+}
 
 @end
