@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet WKWebView *webkitView;
 @property (weak, nonatomic) NSString *urlString;
 @property (weak,nonatomic) NSString *trailerId;
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
 @end
 
 @implementation TrailerViewController
@@ -56,6 +57,9 @@
            }
        }];
     [task resume];
+}
+- (IBAction)pressBackButton:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 /*
