@@ -10,12 +10,15 @@
 #import "UIImageView+AFNetworking.h"
 #import "DetailsViewController.h"
 
-@interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MovieViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
+@property (strong, nonatomic) NSArray *filteredMovies;
 @property(nonatomic,strong) UIRefreshControl *refreshControl;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
+
 
 @end
 
@@ -27,11 +30,9 @@
         
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    
+    self.searchBar.delegate = self;
     
     [self fetchMovies];
-    
-    
     
     
     self.refreshControl = [[UIRefreshControl alloc] init]; // initialize refresh control
@@ -54,7 +55,8 @@
                NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
                
                self.movies = dataDictionary[@"results"];
-               
+               self.filteredMovies = self.movies;
+
                [self.tableView reloadData];
                
 
@@ -70,14 +72,14 @@
 
 // functions that returns how many rows we want in a table view
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.movies.count;
+    return self.filteredMovies.count;
 }
 
 // returns what we want inside of each table section, the amount of sections is defined in the previous function
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell"];
     
-    NSDictionary *movie = self.movies[indexPath.row];
+    NSDictionary *movie = self.filteredMovies[indexPath.row];
     cell.titleLabel.text = movie[@"title"];
     cell.sinopsisLabel.text = movie[@"overview"];
     
@@ -112,6 +114,38 @@
     [alert addAction:okAction];
     // present the alert
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    
+    if (searchText.length != 0) {
+        
+//        NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(NSDictionary *evaluatedObject, NSDictionary *bindings) {
+//            return [evaluatedObject[@"original_title"] containsString:searchText];
+//        }];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(title CONTAINS[cd] %@)", searchText]; // RESEARCH HOW THIS WORKS
+        
+        self.filteredMovies = [self.movies filteredArrayUsingPredicate:predicate];
+                        
+    }
+    else {
+        self.filteredMovies = self.movies;
+        // make keyboard dissapear
+        [self.view endEditing:true];
+    }
+    
+    [self.tableView reloadData];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    self.searchBar.showsCancelButton = YES;
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    self.searchBar.showsCancelButton = NO;
+    self.searchBar.text = @"";
+    [self.searchBar resignFirstResponder];
 }
 
 #pragma mark - Navigation
