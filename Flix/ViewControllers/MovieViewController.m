@@ -84,14 +84,60 @@
     cell.sinopsisLabel.text = movie[@"overview"];
     
     
-    NSString *baseURLString = @"https://image.tmdb.org/t/p/w500";
+    NSString *lowResURLString = @"https://image.tmdb.org/t/p/w45";
+    NSString *highResURLString = @"https://image.tmdb.org/t/p/original";
     NSString *posterURLString = movie[@"poster_path"];
-    NSString *fullPosterURLString = [baseURLString stringByAppendingString:posterURLString];
     
-    NSURL *posterURL = [NSURL URLWithString:fullPosterURLString];
+    NSString *fullLowResPosterURLString = [lowResURLString stringByAppendingString:posterURLString];
+    NSString *fullHighResPosterURLString = [highResURLString stringByAppendingString:posterURLString];
+
+    
+    NSURL *urlSmall = [NSURL URLWithString:fullLowResPosterURLString];
+    NSURL *urlLarge = [NSURL URLWithString:fullHighResPosterURLString];
+
+    NSURLRequest *requestSmall = [NSURLRequest requestWithURL:urlSmall];
+    NSURLRequest *requestLarge = [NSURLRequest requestWithURL:urlLarge];
     
     cell.posterView.image = nil;
-    [cell.posterView setImageWithURL:posterURL];
+    [cell.posterView setImageWithURLRequest:requestSmall
+                          placeholderImage:nil
+                                   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *smallImage) {
+
+                                        // smallImageResponse will be nil if the smallImage is already available
+                                        // in cache (might want to do something smarter in that case).
+
+                                        if(response){
+                                            cell.posterView.alpha = 0.0;
+                                            cell.posterView.image = smallImage;
+
+                                            [UIView animateWithDuration:0.2
+                                                        animations:^{
+
+                                                            cell.posterView.alpha = 1.0;
+
+                                                        } completion:^(BOOL finished) {
+                                                            // The AFNetworking ImageView Category only allows one request to be sent at a time
+                                                            // per ImageView. This code must be in the completion block.
+                                                            [cell.posterView setImageWithURLRequest:requestLarge
+                                                                                  placeholderImage:smallImage
+                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage * largeImage) {
+                                                                                                cell.posterView.image = largeImage;
+                                                                                            }
+                                                                                           failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                                                                               // do something for the failure condition of the large image request
+                                                                                               // possibly setting the ImageView's image to a default image
+                                                                                           }];
+                                                        }];
+                                        }
+                                        else {
+                                            cell.posterView.image = smallImage;
+                                        }
+                                    }
+                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                       // do something for the failure condition
+                                       // possibly try to get the large image
+                                   }
+                                   ];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
