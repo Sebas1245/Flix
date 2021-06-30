@@ -6,10 +6,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Movie.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MovieCell : UITableViewCell
+@property (weak,nonatomic) Movie *movie;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *sinopsisLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *posterView;

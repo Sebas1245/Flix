@@ -1,57 +1,42 @@
 //
-//  DetailsViewController.m
+//  MovieCell.m
 //  Flix
 //
 //  Created by Sebastian Saldana Cardenas on 23/06/21.
 //
 
-#import "DetailsViewController.h"
+#import "MovieCell.h"
 #import "UIImageView+AFNetworking.h"
-#import "TrailerViewController.h"
-@interface DetailsViewController ()
-@property (weak, nonatomic) IBOutlet UIImageView *backdropView;
-@property (weak, nonatomic) IBOutlet UIImageView *posterView;
-@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
-@property (weak, nonatomic) IBOutlet UILabel *synopsisLabel;
-@property (weak, nonatomic) IBOutlet UILabel *dateLabel;
+
+@implementation MovieCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
 
 
-@end
-
-@implementation DetailsViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-
-    
-//    [self.posterView setImageWithURL:self.movie.hiResPosterUrl];
-    [self requestPosters];
-
-    
-    [self.backdropView setImageWithURL:self.movie.backdropURL];
+- (void)setMovie:(Movie *)movie {
+    // Since we're replacing the default setter, we have to set the underlying private storage _movie ourselves.
+    // _movie was an automatically declared variable with the @propery declaration.
+    // You need to do this any time you create a custom setter.
+    _movie = movie;
 
     self.titleLabel.text = self.movie.title;
-    self.synopsisLabel.text = self.movie.synopsis;
-    self.dateLabel.text = self.movie.releaseDate;
-
-    [self.titleLabel sizeToFit];
-    [self.synopsisLabel sizeToFit];
-    [self.dateLabel sizeToFit];
+    self.sinopsisLabel.text = self.movie.synopsis;
     
-}
-- (IBAction)triggerModalView:(UITapGestureRecognizer *)sender {
     
-    [self performSegueWithIdentifier:@"TrailerViewSegue" sender:nil];
-    
-}
 
-
-
--(void)requestPosters {
     NSURLRequest *requestSmall = [NSURLRequest requestWithURL:self.movie.lowResPosterUrl];
     NSURLRequest *requestLarge = [NSURLRequest requestWithURL:self.movie.hiResPosterUrl];
+    
+    self.posterView.image = nil;
     [self.posterView setImageWithURLRequest:requestSmall placeholderImage:nil
         success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *smallImage) {
 
@@ -91,15 +76,4 @@
        }
     ];
 }
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-    TrailerViewController *trailerViewController = [segue destinationViewController];
-    trailerViewController.movieId = self.movie.movieId;
-}
-
-
 @end

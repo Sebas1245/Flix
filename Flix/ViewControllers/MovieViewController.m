@@ -9,12 +9,13 @@
 #import "MovieCell.h"
 #import "UIImageView+AFNetworking.h"
 #import "DetailsViewController.h"
+#import "Movie.h"
 
 @interface MovieViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) NSArray *movies;
-@property (strong, nonatomic) NSArray *filteredMovies;
+@property (nonatomic, strong) NSMutableArray *movies;
+@property (strong, nonatomic) NSMutableArray *filteredMovies;
 @property(nonatomic,strong) UIRefreshControl *refreshControl;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
@@ -31,6 +32,7 @@
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.searchBar.delegate = self;
+    self.tableView.rowHeight = UITableViewAutomaticDimension; // automatically extends the cells for the table view
     
     [self fetchMovies];
     
@@ -53,10 +55,14 @@
            }
            else {
                NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+                              
+               NSArray *dictionaries = dataDictionary[@"results"];
+            
+               self.movies = [Movie moviesWithDictionaries:dictionaries];
                
-               self.movies = dataDictionary[@"results"];
                self.filteredMovies = self.movies;
 
+               
                [self.tableView reloadData];
                
 
@@ -79,65 +85,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell"];
     
-    NSDictionary *movie = self.filteredMovies[indexPath.row];
-    cell.titleLabel.text = movie[@"title"];
-    cell.sinopsisLabel.text = movie[@"overview"];
+    Movie *movie = self.filteredMovies[indexPath.row];
     
-    
-    NSString *lowResURLString = @"https://image.tmdb.org/t/p/w45";
-    NSString *highResURLString = @"https://image.tmdb.org/t/p/original";
-    NSString *posterURLString = movie[@"poster_path"];
-    
-    NSString *fullLowResPosterURLString = [lowResURLString stringByAppendingString:posterURLString];
-    NSString *fullHighResPosterURLString = [highResURLString stringByAppendingString:posterURLString];
-
-    
-    NSURL *urlSmall = [NSURL URLWithString:fullLowResPosterURLString];
-    NSURL *urlLarge = [NSURL URLWithString:fullHighResPosterURLString];
-
-    NSURLRequest *requestSmall = [NSURLRequest requestWithURL:urlSmall];
-    NSURLRequest *requestLarge = [NSURLRequest requestWithURL:urlLarge];
-    
-    cell.posterView.image = nil;
-    [cell.posterView setImageWithURLRequest:requestSmall
-                          placeholderImage:nil
-                                   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *smallImage) {
-
-                                        // smallImageResponse will be nil if the smallImage is already available
-                                        // in cache (might want to do something smarter in that case).
-
-                                        if(response){
-                                            cell.posterView.alpha = 0.0;
-                                            cell.posterView.image = smallImage;
-
-                                            [UIView animateWithDuration:0.2
-                                                        animations:^{
-
-                                                            cell.posterView.alpha = 1.0;
-
-                                                        } completion:^(BOOL finished) {
-                                                            // The AFNetworking ImageView Category only allows one request to be sent at a time
-                                                            // per ImageView. This code must be in the completion block.
-                                                            [cell.posterView setImageWithURLRequest:requestLarge
-                                                                                  placeholderImage:smallImage
-                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage * largeImage) {
-                                                                                                cell.posterView.image = largeImage;
-                                                                                            }
-                                                                                           failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                                                                               // do something for the failure condition of the large image request
-                                                                                               // possibly setting the ImageView's image to a default image
-                                                                                           }];
-                                                        }];
-                                        }
-                                        else {
-                                            cell.posterView.image = smallImage;
-                                        }
-                                    }
-                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                       // do something for the failure condition
-                                       // possibly try to get the large image
-                                   }
-                                   ];
+    cell.movie = movie;
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
@@ -172,7 +122,7 @@
         
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(title CONTAINS[cd] %@)", searchText]; // RESEARCH HOW THIS WORKS
         
-        self.filteredMovies = [self.movies filteredArrayUsingPredicate:predicate];
+        self.filteredMovies = (NSMutableArray *)[self.movies filteredArrayUsingPredicate:predicate];
                         
     }
     else {
@@ -202,7 +152,7 @@
     // Pass the selected object to the new view controller.
     UITableViewCell *tappedCell = sender;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:tappedCell];
-    NSDictionary *movie = self.filteredMovies[indexPath.row];
+    Movie *movie = self.filteredMovies[indexPath.row];
     
     DetailsViewController *detailViewController = [segue destinationViewController];
     detailViewController.movie = movie;
